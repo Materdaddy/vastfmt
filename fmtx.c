@@ -408,7 +408,7 @@ EXTERN FMTX_API_EXPORT FMTX_API_CALL FMTX_MODE_ENUM fmtxIoAppEnableAudio(void)
     if (aucBufIn[1]==(RequestSi4711AudioEnable|RequestDone)) {
         //errcode 1=sr, 2=fmt
         if(aucBufIn[2]!=SI4711_OK){
-            logwrite(LOG_ERROR, "USB: Error in %s", (aucBufIn[2]==1 ? "SR" : (aucBufIn[2]==3 ? "FMT" : "UNK")));
+            logwrite(LOG_ERROR, "FMTX/USB: Error in %s", (aucBufIn[2]==1 ? "SR" : (aucBufIn[2]==3 ? "FMT" : "UNK")));
             return FMTX_MODE_NONE;
         }
         return FMTX_MODE_OK;
@@ -449,7 +449,7 @@ EXTERN FMTX_API_EXPORT FMTX_API_CALL FMTX_MODE_ENUM fmtxIoAppDisableAudio(void)
     if (aucBufIn[1]==(RequestSi4711AudioDisable|RequestDone)) {
         //errcode 1=sr, 2=fmt
         if(aucBufIn[2]!=SI4711_OK){
-            logwrite(LOG_ERROR, "USB: Error in %s", (aucBufIn[2]==1 ? "SR" : (aucBufIn[2]==3 ? "FMT" : "UNK")));
+            logwrite(LOG_ERROR, "FMTX/USB: Error in %s", (aucBufIn[2]==1 ? "SR" : (aucBufIn[2]==3 ? "FMT" : "UNK")));
             return FMTX_MODE_NONE;
         }
         return FMTX_MODE_OK;
@@ -490,7 +490,7 @@ EXTERN FMTX_API_EXPORT FMTX_API_CALL FMTX_MODE_ENUM fmtxIoAppAsqStatus(uint8_t *
     if (aucBufIn[1]==(RequestSi4711AsqStatus|RequestDone)) {
         //errcode 1=sr, 2=fmt
         if(aucBufIn[2]!=SI4711_OK){
-            logwrite(LOG_ERROR, "USB: Error in %s", (aucBufIn[2]==1 ? "SR" : (aucBufIn[2]==3 ? "FMT" : "UNK")));
+            logwrite(LOG_ERROR, "FMTX/USB: Error in %s", (aucBufIn[2]==1 ? "SR" : (aucBufIn[2]==3 ? "FMT" : "UNK")));
             return FMTX_MODE_NONE;
         }
         if(aucBufIn[3])
@@ -544,7 +544,7 @@ EXTERN FMTX_API_EXPORT FMTX_API_CALL FMTX_MODE_ENUM fmtxIoAppGetTuneStatus(uint1
     aucBufOut[1] = PCTransfer;
     aucBufOut[2] = RequestSi4711TuneStatus;
 
-    logwrite(LOG_XTREME, "USB: Sending %d bytes:", 2);
+    logwrite(LOG_XTREME, "FMTX/USB: Sending %d bytes:", 2);
     print_bytes(LOG_DUMP, (char *) &aucBufOut[1], 2);
 
     hid_write(phd, aucBufOut, 43);
@@ -554,7 +554,7 @@ EXTERN FMTX_API_EXPORT FMTX_API_CALL FMTX_MODE_ENUM fmtxIoAppGetTuneStatus(uint1
     fmtxClose(phd);
     phd = NULL;
 
-    logwrite(LOG_XTREME, "USB: Received:");
+    logwrite(LOG_XTREME, "FMTX/USB: Received:");
     print_bytes(LOG_DUMP, (char *) aucBufIn, 32);
 
     /* first check status bytes then check which mode */
@@ -567,7 +567,7 @@ EXTERN FMTX_API_EXPORT FMTX_API_CALL FMTX_MODE_ENUM fmtxIoAppGetTuneStatus(uint1
     if (aucBufIn[1]==(RequestSi4711TuneStatus|RequestDone)) {
         //errcode 1=sr, 2=fmt
         if(aucBufIn[2]!=SI4711_OK){
-            logwrite(LOG_ERROR, "USB: Error in %s", (aucBufIn[2]==1 ? "SR" : (aucBufIn[2]==3 ? "FMT" : "UNK")));
+            logwrite(LOG_ERROR, "FMTX/USB: Error in %s", (aucBufIn[2]==1 ? "SR" : (aucBufIn[2]==3 ? "FMT" : "UNK")));
             return FMTX_MODE_NONE;
         }
         *freq = aucBufIn[3] << 8 | aucBufIn[4];
@@ -597,7 +597,7 @@ EXTERN FMTX_API_EXPORT FMTX_API_CALL FMTX_MODE_ENUM fmtxTransmitterGetTuneStatus
 
 static int si471x_ShowStatus(uint8_t u8Status)
 {
-    logwrite(LOG_DEBUG, "STATUS: %s|%s|%s|%s|%s",
+    logwrite(LOG_DEBUG, "FMTX/STATUS: %s|%s|%s|%s|%s",
              (u8Status & CTS)?"CTS":"cts",
              (u8Status & ERR)?"ERR":"err",
              (u8Status & RDSINT)?"RDSINT":"rdsint",
@@ -638,7 +638,7 @@ static int eeprom_usbAccess(uint8_t *data, uint8_t DataSize, uint16_t offset, in
     if(write)
         memcpy(&aucBufOut[6], data, DataSize);
 
-    logwrite(LOG_XTREME, "USB: Sending %d bytes:", DataSize+4);
+    logwrite(LOG_XTREME, "FMTX/USB: Sending %d bytes:", DataSize+4);
     print_bytes(LOG_DUMP, (char *) &aucBufOut[1], 32);
 
     hid_write(phd, aucBufOut, 43);
@@ -648,13 +648,13 @@ static int eeprom_usbAccess(uint8_t *data, uint8_t DataSize, uint16_t offset, in
     fmtxClose(phd);
     phd = NULL;
 
-    logwrite(LOG_XTREME, "USB: Received:");
+    logwrite(LOG_XTREME, "FMTX/USB: Received:");
     print_bytes(LOG_DUMP, (char *) aucBufIn, 32);
 //  +-----------+-----------+--------+---------+------+---------+
 //  | PCCommand | PCRequest | Status | Data[0] | ...  | Data[n] |
 //  +-----------+-----------+--------+---------+------+---------+
     if(aucBufIn[2]!=0x01) {
-        logwrite(LOG_ERROR, "USB: I2C_TRANSFER failed");
+        logwrite(LOG_ERROR, "FMTX/USB: I2C_TRANSFER failed");
         //sometimes it timeoutes, but the CTS=0, so we must re-read this byte again.
         return FMTX_MODE_NONE;
     }
@@ -691,7 +691,7 @@ static int si471x_usbAccess(uint8_t *request, int ReqSize, uint8_t *reply, int *
     aucBufOut[3] = ReqSize;
     memcpy(&aucBufOut[4], request, ReqSize);
 
-    logwrite(LOG_XTREME, "USB: Sending %d bytes:", ReqSize+3);
+    logwrite(LOG_XTREME, "FMTX/USB: Sending %d bytes:", ReqSize+3);
     print_bytes(LOG_DUMP, (char *) &aucBufOut[1], 32);
 
     hid_write(phd, aucBufOut, 43);
@@ -701,28 +701,28 @@ static int si471x_usbAccess(uint8_t *request, int ReqSize, uint8_t *reply, int *
     fmtxClose(phd);
     phd = NULL;
 
-    logwrite(LOG_XTREME, "USB: Received:");
+    logwrite(LOG_XTREME, "FMTX/USB: Received:");
     print_bytes(LOG_DUMP, (char *) aucBufIn, 32);
 //  +-----------+-----------+-------------+------------+---------+---------+---------+ ... -+----------+
 //  | PCCommand | PCRequest | WriteStatus | ReadStatus | RespLen |  Status | Resp[1] | ...  | Resp[15] |
 //  +-----------+-----------+-------------+------------+---------+---------+---------+ ... -+----------+
     if(aucBufIn[2]!=1) {
-        logwrite(LOG_ERROR, "USB: command failed (%d): %s, returned (FALSE)", aucBufIn[2], Si471xStatusStr(aucBufIn[2]));
+        logwrite(LOG_ERROR, "FMTX/USB: command failed (%d): %s, returned (FALSE)", aucBufIn[2], Si471xStatusStr(aucBufIn[2]));
         //sometimes it timeoutes, but the CTS=0, so we must re-read this byte again.
         //return 1;
     }
 
     if(aucBufIn[3]!=SI4711_OK) {
-        logwrite(LOG_ERROR, "USB: I2C_READ failed (%d): %s", aucBufIn[3], Si471xStatusStr(aucBufIn[3]));
+        logwrite(LOG_ERROR, "FMTX/USB: I2C_READ failed (%d): %s", aucBufIn[3], Si471xStatusStr(aucBufIn[3]));
         return FMTX_MODE_NONE;
     }
 
     if(aucBufIn[4] > 16) {
-        logwrite(LOG_ERROR, "USB: I2C_READ failed, too much bytes received: %d", aucBufIn[4]);
+        logwrite(LOG_ERROR, "FMTX/USB: I2C_READ failed, too much bytes received: %d", aucBufIn[4]);
         return FMTX_MODE_NONE;
     }
 
-    logwrite(LOG_XTREME, "USB: Volume: %d.%d (deviation: %d)", (char ) aucBufIn[21], (char ) aucBufIn[22], (uint16_t ) (aucBufIn[23] << 8 | aucBufIn[24]));
+    logwrite(LOG_XTREME, "FMTX/USB: Volume: %d.%d (deviation: %d)", (char ) aucBufIn[21], (char ) aucBufIn[22], (uint16_t ) (aucBufIn[23] << 8 | aucBufIn[24]));
 
     memcpy(reply, &aucBufIn[5], aucBufIn[4]);
     *ReplySize=aucBufIn[4];
@@ -739,7 +739,7 @@ static int si471x_cmdEEPROMAccess(uint8_t *request, int ReqSize, uint8_t *reply,
     if(ReqSize < 1 || ReqSize > 8)
         return FMTX_MODE_NONE;
 
-    logwrite(LOG_DEBUG, "EEPROM: Emulate command %02x", request[0]);
+    logwrite(LOG_DEBUG, "FMTX/EEPROM: Emulate command %02x", request[0]);
     for(i=0;i<16;i++)
         reply[i] = 0x00;
 
@@ -750,7 +750,7 @@ static int si471x_cmdEEPROMAccess(uint8_t *request, int ReqSize, uint8_t *reply,
     case GET_PROPERTY:
     case SET_PROPERTY:
     case TX_TUNE_STATUS:
-        logwrite(LOG_ERROR, "EEPROM: %s: mad cmd %02x not allowed!", __FUNCTION__, request[0]);
+        logwrite(LOG_ERROR, "FMTX/EEPROM: %s: mad cmd %02x not allowed!", __FUNCTION__, request[0]);
         return FMTX_MODE_NONE;
         break;
     /* setting to eeprom image */
@@ -760,7 +760,7 @@ static int si471x_cmdEEPROMAccess(uint8_t *request, int ReqSize, uint8_t *reply,
     case TX_TUNE_FREQ:
     case TX_TUNE_POWER:
         if(fmtxCmdEEPROM.numCmds > FMTX_MAX_EEPROM_CMDS) {
-            logwrite(LOG_ERROR, "EEPROM: %s: error setting cmd %02x not enough space!", __FUNCTION__, request[0]);
+            logwrite(LOG_ERROR, "FMTX/EEPROM: %s: error setting cmd %02x not enough space!", __FUNCTION__, request[0]);
             return FMTX_MODE_NONE;
         }
         data = &fmtxCmdEEPROM.commandData[fmtxCmdEEPROM.numCmds*FMTX_EEPROM_CMDSIZE];
@@ -810,7 +810,7 @@ EXTERN FMTX_API_EXPORT FMTX_API_CALL FMTX_MODE_ENUM fmtxIoAppCommand(uint8_t u8C
     }
     va_end(vl);
 
-    logwrite(LOG_DEBUG, "USB: Sending device Cmd: %02x %d-args...", u8Cmd, u8Amount);
+    logwrite(LOG_DEBUG, "FMTX/USB: Sending device Cmd: %02x %d-args...", u8Cmd, u8Amount);
     print_bytes(LOG_DUMP, (char *) &buf_in[1], 7);
 
     bytes=0;
@@ -825,21 +825,21 @@ EXTERN FMTX_API_EXPORT FMTX_API_CALL FMTX_MODE_ENUM fmtxIoAppCommand(uint8_t u8C
     }
 
     if(bytes==0) {
-        logwrite(LOG_ERROR, "I2C: Status not received!");
+        logwrite(LOG_ERROR, "FMTX/I2C: Status not received!");
         return FMTX_MODE_NONE;
     }
 
     if (buf_out[0] & ERR) {
-        logwrite(LOG_ERROR, "I2C: Status not have got  ERR flag!");
+        logwrite(LOG_ERROR, "FMTX/I2C: Status not have got  ERR flag!");
     }
 
     if(!(buf_out[0] & CTS)) {
-        logwrite(LOG_ERROR, "I2C: Status not have CTS!");
+        logwrite(LOG_ERROR, "FMTX/I2C: Status not have CTS!");
     }
 
 
     memcpy(pu8Resp, buf_out, bytes);
-    logwrite(LOG_DEBUG, "USB: Cmd %02x answered: %02x... ", u8Cmd, buf_out[0]);
+    logwrite(LOG_DEBUG, "FMTX/USB: Cmd %02x answered: %02x... ", u8Cmd, buf_out[0]);
     print_bytes(LOG_DUMP, (char *) &buf_out[0], 16);
 
     si471x_ShowStatus(pu8Resp[0]);
@@ -851,12 +851,12 @@ EXTERN FMTX_API_EXPORT FMTX_API_CALL FMTX_MODE_ENUM fmtxIoAppSetEEPROMProperty(i
 {
     uint8_t *data;
     if(fmtxCmdEEPROM.numCmds > FMTX_MAX_EEPROM_CMDS) {
-        logwrite(LOG_ERROR, "EEPROM: %s: error setting prop %04x => %04x not enough space!", __FUNCTION__, i16Prop, i16Val);
+        logwrite(LOG_ERROR, "FMTX/EEPROM: %s: error setting prop %04x => %04x not enough space!", __FUNCTION__, i16Prop, i16Val);
         return FMTX_MODE_NONE;
     }
 
     if(getDefaultProp(i16Prop) == i16Val){
-        logwrite(LOG_ERROR, "EEPROM: %s: prop %04x have default value %04x saving space!", __FUNCTION__, i16Prop, i16Val);
+        logwrite(LOG_ERROR, "FMTX/EEPROM: %s: prop %04x have default value %04x saving space!", __FUNCTION__, i16Prop, i16Val);
         return FMTX_MODE_OK;
     }
 
@@ -903,7 +903,7 @@ EXTERN FMTX_API_EXPORT FMTX_API_CALL FMTX_MODE_ENUM fmtxIoAppSetProperty(int16_t
     aucBufOut[5] = i16Val >> 8;
     aucBufOut[6] = i16Val;
 
-    logwrite(LOG_DEBUG, "USB: Sending device \"%s\" %04x => %04x request...", Si471xRequestStr(aucBufOut[2]), i16Prop, i16Val);
+    logwrite(LOG_DEBUG, "FMTX/USB: Sending device \"%s\" %04x => %04x request...", Si471xRequestStr(aucBufOut[2]), i16Prop, i16Val);
     print_bytes(LOG_DUMP, (char *) &aucBufOut[1], 6);
 
     phd = fmtxOpen();
@@ -922,38 +922,38 @@ EXTERN FMTX_API_EXPORT FMTX_API_CALL FMTX_MODE_ENUM fmtxIoAppSetProperty(int16_t
     fmtxClose(phd);
     phd = NULL;
 
-    logwrite(LOG_XTREME, "USB: Received:");
+    logwrite(LOG_XTREME, "FMTX/USB: Received:");
     print_bytes(LOG_DUMP, (char *) aucBufIn, 32);
 //  +-----------+-----------+-------------+------------+----------+-----------+
 //  | PCCommand | PCRequest | WriteStatus | ReadStatus | NumBytes | CMDStatus |
 //  +-----------+-----------+-------------+------------+----------+-----------+
     if(aucBufIn[0] & PCRequestError) {
-        logwrite(LOG_ERROR, "USB: request error");
+        logwrite(LOG_ERROR, "FMTX/USB: request error");
         goto set_prop_err;
     }
 
     if(!(aucBufIn[1] & RequestDone)) {
-        logwrite(LOG_ERROR, "USB: request is not done!");
+        logwrite(LOG_ERROR, "FMTX/USB: request is not done!");
         goto set_prop_err;
     }
 
     if(aucBufIn[8]!=SI4711_OK) {
-        logwrite(LOG_ERROR, "USB: Device request \"%s\" failed (%d): %s", Si471xRequestStr(RequestSi4711SetProp), aucBufIn[2], Si471xStatusStr(aucBufIn[2]));
+        logwrite(LOG_ERROR, "FMTX/USB: Device request \"%s\" failed (%d): %s", Si471xRequestStr(RequestSi4711SetProp), aucBufIn[2], Si471xStatusStr(aucBufIn[2]));
         goto set_prop_err;
     }
 
     if ( aucBufIn[7] & ERR) {
-        logwrite(LOG_ERROR, "SI471X: Answers: Error setting property 0x%04x to \"0x%04x\".", i16Prop, i16Val);
+        logwrite(LOG_ERROR, "FMTX/SI471X: Answers: Error setting property 0x%04x to \"0x%04x\".", i16Prop, i16Val);
         goto set_prop_err;
     }
 
     if ( !(aucBufIn[7] & CTS)) {
-        logwrite(LOG_ERROR, "SI471X: Answers: NO CTS! When setting property 0x%04x.", i16Prop);
+        logwrite(LOG_ERROR, "FMTX/SI471X: Answers: NO CTS! When setting property 0x%04x.", i16Prop);
         goto set_prop_err;
     }
 
     if(aucBufIn[6]!=1) {
-        logwrite(LOG_ERROR, "USB: Device request \"%s\" failed (%02x): %s (false!)", Si471xRequestStr(RequestSi4711SetProp), aucBufIn[6]);
+        logwrite(LOG_ERROR, "FMTX/USB: Device request \"%s\" failed (%02x): %s (false!)", Si471xRequestStr(RequestSi4711SetProp), aucBufIn[6]);
         goto set_prop_err;
     }
 
@@ -1082,7 +1082,7 @@ EXTERN FMTX_API_EXPORT FMTX_API_CALL FMTX_MODE_ENUM fmtxIoAppGetEEPROMProperty(i
     }
 
     if(!found) *pi16Val = getDefaultProp(i16Prop);
-    logwrite(LOG_DEBUG, "EEPROM: Answers: => 0x%04x.", *pi16Val);
+    logwrite(LOG_DEBUG, "FMTX/EEPROM: Answers: => 0x%04x.", *pi16Val);
     return FMTX_MODE_OK;
 }
 
@@ -1093,7 +1093,7 @@ EXTERN FMTX_API_EXPORT FMTX_API_CALL FMTX_MODE_ENUM fmtxIoAppGetProperty(int16_t
     uint8_t aucBufIn[43];
     uint8_t aucBufOut[43];
 
-    logwrite(LOG_DEBUG, "USB: Sending device \"%s\" %04x => ?? request...", Si471xRequestStr(RequestSi4711GetProp), i16Prop);
+    logwrite(LOG_DEBUG, "FMTX/USB: Sending device \"%s\" %04x => ?? request...", Si471xRequestStr(RequestSi4711GetProp), i16Prop);
 
     if(fmtxCmdSpecial == FMTX_SPECIAL_EEPROM) return fmtxIoAppGetEEPROMProperty(i16Prop, pi16Val);
 
@@ -1121,45 +1121,45 @@ EXTERN FMTX_API_EXPORT FMTX_API_CALL FMTX_MODE_ENUM fmtxIoAppGetProperty(int16_t
     fmtxClose(phd);
     phd = NULL;
 
-    logwrite(LOG_XTREME, "USB: Received:");
+    logwrite(LOG_XTREME, "FMTX/USB: Received:");
     print_bytes(LOG_DUMP, (char *) aucBufIn, 32);
 //  +-----------+-----------+-----------+
 //  | PCCommand | PCRequest | CMDStatus |
 //  +-----------+-----------+-----------+
     if(aucBufIn[0] & PCRequestError) {
-        logwrite(LOG_ERROR, "USB: request error");
+        logwrite(LOG_ERROR, "FMTX/USB: request error");
         goto get_prop_err;
     }
 
     if(!(aucBufIn[1] & RequestDone)) {
-        logwrite(LOG_ERROR, "USB: request is not done!");
+        logwrite(LOG_ERROR, "FMTX/USB: request is not done!");
         goto get_prop_err;
     }
 
     if(aucBufIn[8]!=SI4711_OK) {
-        logwrite(LOG_ERROR, "USB: Device request \"%s\" failed (%d): %s", Si471xRequestStr(RequestSi4711GetProp), aucBufIn[8], Si471xStatusStr(aucBufIn[8]));
+        logwrite(LOG_ERROR, "FMTX/USB: Device request \"%s\" failed (%d): %s", Si471xRequestStr(RequestSi4711GetProp), aucBufIn[8], Si471xStatusStr(aucBufIn[8]));
         goto get_prop_err;
     }
 
     // buf[5]- is write status
     // buf[6]- is read status
     if ( aucBufIn[7] & ERR) {
-        logwrite(LOG_ERROR, "SI471X: Answers: Error getting property 0x%04x.", i16Prop);
+        logwrite(LOG_ERROR, "FMTX/SI471X: Answers: Error getting property 0x%04x.", i16Prop);
         goto get_prop_err;
     }
 
     if ( !(aucBufIn[7] & CTS)) {
-        logwrite(LOG_ERROR, "SI471X: Answers: NO CTS! When getting property 0x%04x.", i16Prop);
+        logwrite(LOG_ERROR, "FMTX/SI471X: Answers: NO CTS! When getting property 0x%04x.", i16Prop);
         goto get_prop_err;
     }
 
     if(aucBufIn[6]!=1) {
-        logwrite(LOG_ERROR, "USB: Device request \"%s\" failed (%02x): (false!)", Si471xRequestStr(RequestSi4711SetProp), aucBufIn[6]);
+        logwrite(LOG_ERROR, "FMTX/USB: Device request \"%s\" failed (%02x): (false!)", Si471xRequestStr(RequestSi4711SetProp), aucBufIn[6]);
         goto get_prop_err;
     }
 
     *pi16Val = (int16_t ) ((aucBufIn[4] & 0x00FF) << 8) | aucBufIn[5];
-    logwrite(LOG_DEBUG, "SI471X: Answers: => 0x%04x.", *pi16Val);
+    logwrite(LOG_DEBUG, "FMTX/SI471X: Answers: => 0x%04x.", *pi16Val);
     return FMTX_MODE_OK;
 get_prop_err:
     return FMTX_MODE_NONE;
@@ -1187,7 +1187,7 @@ EXTERN FMTX_API_EXPORT FMTX_API_CALL FMTX_MODE_ENUM fmtxEEPROMReadConfig(void)
     if(fmtxCmdSpecial != FMTX_SPECIAL_EEPROM)
         return FMTX_MODE_NONE;
 
-    logwrite(LOG_DEBUG, "EEPROM: Reading header.");
+    logwrite(LOG_DEBUG, "FMTX/EEPROM: Reading header.");
     /* get chunks header */
     if(eeprom_usbAccess(cmdChunk, FMTX_EEPROM_CMDSIZE, TX_CONFIG_OFFSET + 0, 0)!=FMTX_MODE_OK)
         return FMTX_MODE_NONE;
@@ -1198,12 +1198,12 @@ EXTERN FMTX_API_EXPORT FMTX_API_CALL FMTX_MODE_ENUM fmtxEEPROMReadConfig(void)
     fmtxCmdEEPROM.startupFlag = cmdChunk[3];
 
     if(fmtxCmdEEPROM.syncWord != 0xB00B){
-        logwrite(LOG_ERROR, "EEPROM: Bad Sync Word: %04X.", fmtxCmdEEPROM.syncWord);
+        logwrite(LOG_ERROR, "FMTX/EEPROM: Bad Sync Word: %04X.", fmtxCmdEEPROM.syncWord);
         return FMTX_MODE_POWER_DOWN;
     }
 
     if(fmtxCmdEEPROM.numCmds > FMTX_MAX_EEPROM_CMDS){
-        logwrite(LOG_ERROR, "EEPROM: Too much commands: %d.", fmtxCmdEEPROM.numCmds);
+        logwrite(LOG_ERROR, "FMTX/EEPROM: Too much commands: %d.", fmtxCmdEEPROM.numCmds);
         return FMTX_MODE_NONE;
     }
     memset(fmtxCmdEEPROM.commandData, 0xCC, FMTX_EEPROM_CMDSIZE*FMTX_MAX_EEPROM_CMDS);
@@ -1994,7 +1994,7 @@ EXTERN FMTX_API_EXPORT FMTX_API_CALL uint8_t fmtxRDSSetRtPlusInfo(int content1, 
         fmtxCmdStatus=FMTX_MODE_NONE;
         return (fmtxCmdStatus);
     }
-    logwrite(LOG_DEBUG, "RDS: circular: %d/%d, fifo: %d/%d", buff[3], buff[2], buff[5], buff[4]);
+    logwrite(LOG_DEBUG, "FMTX/RDS: circular: %d/%d, fifo: %d/%d", buff[3], buff[2], buff[5], buff[4]);
 
     //send RT+ announces
     //  FmRadioController::HandleRDSData
@@ -2016,7 +2016,7 @@ EXTERN FMTX_API_EXPORT FMTX_API_CALL uint8_t fmtxRDSSetRtPlusInfo(int content1, 
         fmtxCmdStatus=FMTX_MODE_NONE;
         return (fmtxCmdStatus);
     }
-    logwrite(LOG_DEBUG, "RDS: circular: %d/%d, fifo: %d/%d", buff[3], buff[2], buff[5], buff[4]);
+    logwrite(LOG_DEBUG, "FMTX/RDS: circular: %d/%d, fifo: %d/%d", buff[3], buff[2], buff[5], buff[4]);
     return (fmtxCmdStatus);
 }
 
@@ -2033,7 +2033,7 @@ EXTERN FMTX_API_EXPORT FMTX_API_CALL uint8_t fmtxRDSSetRtMessage(const char *mes
 
     msgChars = strlen(messages);
     if (msgChars > 64){
-            logwrite(LOG_INFO, "RDS: RT %d chars - is too long, max RadioText length is %d chars",
+            logwrite(LOG_INFO, "FMTX/RDS: RT %d chars - is too long, max RadioText length is %d chars",
                                                     strlen(messages), 64);
             msgChars=64;
     } /*else if (msgChars < 63) {
@@ -2056,7 +2056,7 @@ EXTERN FMTX_API_EXPORT FMTX_API_CALL uint8_t fmtxRDSSetRtMessage(const char *mes
 
     avaliableBytes = buff[2];
     if (avaliableBytes < 64) {
-            logwrite(LOG_ERROR, "RDS: RT: Avaliable only %d chars, but message creates %d chars, please shorter your radio text message!",
+            logwrite(LOG_ERROR, "FMTX/RDS: RT: Avaliable only %d chars, but message creates %d chars, please shorter your radio text message!",
                                                     avaliableBytes, 64);
             fmtxCmdStatus=FMTX_MODE_NONE;
             return (fmtxCmdStatus);
@@ -2071,7 +2071,7 @@ EXTERN FMTX_API_EXPORT FMTX_API_CALL uint8_t fmtxRDSSetRtMessage(const char *mes
                 return (fmtxCmdStatus);
             }
 
-            logwrite(LOG_DEBUG, "RDS: circular: %d/%d, fifo: %d/%d", buff[3], buff[2], buff[5], buff[4]);
+            logwrite(LOG_DEBUG, "FMTX/RDS: circular: %d/%d, fifo: %d/%d", buff[3], buff[2], buff[5], buff[4]);
     }
     return (fmtxCmdStatus);
 }
@@ -2109,7 +2109,7 @@ EXTERN FMTX_API_EXPORT FMTX_API_CALL uint8_t fmtxRDSSendTimeStamp()
         offset = abs(offset) & 0x1F;
 
     /* send timestamp */
-    logwrite(LOG_DEBUG, "RDS: local timestamp MJD:%d, %d:%d %s%d/2", MJD, ltm->tm_hour, ltm->tm_min, (offset & 0x20)?"-":"+", offset);
+    logwrite(LOG_DEBUG, "FMTX/RDS: local timestamp MJD:%d, %d:%d %s%d/2", MJD, ltm->tm_hour, ltm->tm_min, (offset & 0x20)?"-":"+", offset);
     if(fmtxIoAppCommand(TX_RDS_BUFF, buff, 7, TX_RDS_BUFF_IN_FIFO|TX_RDS_BUFF_IN_LDBUFF, 0x40, MJD >> 15, MJD >> 7, MJD << 1|((ltm->tm_hour & 0x1F)>> 4), ((ltm->tm_hour & 0x1F)<< 4)|((ltm->tm_min & 0x3F)>> 2), ((ltm->tm_min & 0x3F)<< 6)|offset) != FMTX_MODE_OK)
         fmtxCmdStatus=FMTX_MODE_NONE;
     return (fmtxCmdStatus);
