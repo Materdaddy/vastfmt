@@ -316,15 +316,15 @@ int main(int argc, char *argv[])
 		{
 			case 't':
 				settings.transmit = true;
-				logwrite(LOG_DEBUG, "Enabled transmission");
+				logwrite(LOG_INFO, "Enabled transmission");
 				break;
 			case 'n':
 				settings.transmit = false;
-				logwrite(LOG_DEBUG, "Diabled transmission");
+				logwrite(LOG_INFO, "Diabled transmission");
 				break;
 			case 'f': // tune-frequency
 				settings.tuneFrequency = strtod(optarg, NULL);
-				logwrite(LOG_DEBUG, "Set tune frequency to %f", settings.tuneFrequency);
+				logwrite(LOG_INFO, "Set tune frequency to %f", settings.tuneFrequency);
 				break;
 			case 's': // rds-station
 				if ( settings.rdsLineCount >= 12 )
@@ -337,19 +337,19 @@ int main(int argc, char *argv[])
 					free(settings.rdsLineText[settings.rdsLineCount]);
 
 				settings.rdsLineText[settings.rdsLineCount] = strdup(optarg);
-				logwrite(LOG_DEBUG, "Set Station to %s",
+				logwrite(LOG_INFO, "Set Station to %s",
 					settings.rdsLineText[settings.rdsLineCount]);
 
 				settings.rdsLineCount++;
 
 				//TODO: Calculate PI
     			//sscanf("0xHEX", "%x%x", &settings.rdsPI, (&settings.rdsPI+1));
-				//logwrite(LOG_DEBUG, "Set RDS PI to %ld", settings.rdsPI);
+				//logwrite(LOG_INFO, "Set RDS PI to %ld", settings.rdsPI);
 				break;
 			case 'T': // rds-text
 				free(settings.rtMessage);
 				settings.rtMessage = strdup(optarg);
-				logwrite(LOG_DEBUG, "Set RDS Text to %s", settings.rtMessage);
+				logwrite(LOG_INFO, "Set RDS Text to %s", settings.rtMessage);
 				break;
 			case 'p': // power
 				settings.power = atoi(optarg);
@@ -363,63 +363,63 @@ int main(int argc, char *argv[])
 					logwrite(LOG_ERROR, "Power set too high, lowering to 120");
 					settings.power = 120;
 				}
-				logwrite(LOG_DEBUG, "Set transmit power to %lld", settings.power);
+				logwrite(LOG_INFO, "Set transmit power to %lld", settings.power);
 				break;
 			case 'a': // antenna-cap
 				settings.antennaCap = strtod(optarg, NULL);
-				logwrite(LOG_DEBUG, "Set antenna capacitor to %f", settings.antennaCap);
+				logwrite(LOG_INFO, "Set antenna capacitor to %f", settings.antennaCap);
 				break;
 			case 'e': // preemphasisid
 				if ( strcmp(optarg, "USA") == 0 )
 				{
-					logwrite(LOG_DEBUG, "Setting Preemphasis ID to 0 for USA");
+					logwrite(LOG_INFO, "Setting Preemphasis ID to 0 for USA");
 					settings.preemphasisId = 0;
 				}
 				else if ( strcmp(optarg, "Europe") == 0 )
 				{
-					logwrite(LOG_DEBUG, "Setting Preemphasis ID to 1 for Europe");
+					logwrite(LOG_INFO, "Setting Preemphasis ID to 1 for Europe");
 					settings.preemphasisId = 1;
 				}
 				else
 				{
-					logwrite(LOG_DEBUG, "Couldn't determine Preemphasis ID");
+					logwrite(LOG_INFO, "Couldn't determine Preemphasis ID");
 				}
 				break;
 			case 'P': // pilot
-				logwrite(LOG_DEBUG, "Enabling pilot tone");
+				logwrite(LOG_INFO, "Enabling pilot tone");
 				settings.pilot = true;
 				break;
 			case  1:  // no-pilot
-				logwrite(LOG_DEBUG, "Disabling pilot tone");
+				logwrite(LOG_INFO, "Disabling pilot tone");
 				settings.pilot = false;
 				break;
 			case 'D': // pilot-deviation
 				settings.pilotDeviation = atoi(optarg);
-				logwrite(LOG_DEBUG, "Setting pilot deviation to %d Hz", settings.pilotDeviation);
+				logwrite(LOG_INFO, "Setting pilot deviation to %d Hz", settings.pilotDeviation);
 				break;
 			case 'F': // pilot-frequency
 				settings.pilotFrequency = atoi(optarg);
-				logwrite(LOG_DEBUG, "Setting pilot frequency to %hd Hz", settings.pilotFrequency);
+				logwrite(LOG_INFO, "Setting pilot frequency to %hd Hz", settings.pilotFrequency);
 				break;
 			case 'S': // stereo
 				settings.lmr = true;
-				logwrite(LOG_DEBUG, "Enabling stereo (Disabling mono)");
+				logwrite(LOG_INFO, "Enabling stereo (Disabling mono)");
 				break;
 			case 'M': // mono
 				settings.lmr = false;
-				logwrite(LOG_DEBUG, "Enabling mono (Disabling stereo)");
+				logwrite(LOG_INFO, "Enabling mono (Disabling stereo)");
 				break;
 			case 'R': // rds
 				settings.rds = true;
-				logwrite(LOG_DEBUG, "Enabling RDS");
+				logwrite(LOG_INFO, "Enabling RDS");
 				break;
 			case  2:  // no-rds
 				settings.rds = false;
-				logwrite(LOG_DEBUG, "Disabling RDS");
+				logwrite(LOG_INFO, "Disabling RDS");
 				break;
 			case 'd': // rds-deviation
 				settings.rdsDeviation = atoi(optarg);
-				logwrite(LOG_DEBUG, "Set RDS deviation to %d", settings.rdsDeviation);
+				logwrite(LOG_INFO, "Set RDS deviation to %d", settings.rdsDeviation);
 				break;
 			case 'v': // verbose
 				logwrite(loglevel, "Upping verbosity");
@@ -461,11 +461,11 @@ int main(int argc, char *argv[])
 	    switch(ret)
 		{
 		    case FMTX_MODE_POWER_UP:
-		        logwrite(LOG_DEBUG, "Frontend powered up!");
+		        logwrite(LOG_INFO, "Frontend powered up!");
 		        fmtxCmdStatus=FMTX_MODE_OK;
 		        break;
 		    case FMTX_MODE_TRANSMITTING:
-		        logwrite(LOG_DEBUG, "Frontend already powered up!");
+		        logwrite(LOG_INFO, "Frontend already powered up!");
 		        fmtxCmdStatus=FMTX_MODE_OK;
 		        break;
 		    default:
