@@ -529,6 +529,8 @@ int main(int argc, char *argv[])
 
 	if (settings.transmit && settings.setTransmit)
 	{
+		logwrite(LOG_INFO, "Turning on transmitter");
+
 		// Turn on the front end
 		ret = fmtxIoAppFeUp();
 		switch(ret)
@@ -550,6 +552,8 @@ int main(int argc, char *argv[])
 	}
 	else if (settings.setTransmit)
 	{
+		logwrite(LOG_INFO, "Turning off transmitter");
+
 		// Turn off the front end
 		ret = fmtxIoAppFeDown();
 		if (ret != FMTX_MODE_POWER_DOWN)
@@ -563,6 +567,8 @@ int main(int argc, char *argv[])
 
 	if (settings.setTuneFrequency)
 	{
+		logwrite(LOG_INFO, "Setting tune frequency");
+
 		ret = fmtxTransmitterSetTuneFreq(settings.tuneFrequency);
 		if (ret != FMTX_MODE_OK)
 		{
@@ -574,6 +580,8 @@ int main(int argc, char *argv[])
 
 	if (settings.setRdsPI)
 	{
+		logwrite(LOG_INFO, "Setting PI value");
+
 		ret = fmtxRDSSetPI(settings.rdsPI);
 		if (ret != FMTX_MODE_OK)
 		{
@@ -594,6 +602,8 @@ int main(int argc, char *argv[])
 
 	if (settings.setRdsLineText)
 	{
+		logwrite(LOG_INFO, "Setting RDS PS message");
+
 		ret = fmtxRDSSetPsMessageById(settings.rdsLineId,
 				settings.rdsLineText[settings.rdsLineId]);
 		if (ret != FMTX_MODE_OK)
@@ -613,6 +623,8 @@ int main(int argc, char *argv[])
 	}
 	else if ( settings.rtMessage && settings.setRtMessage )
 	{
+		logwrite(LOG_ERROR, "Setting basic RT message");
+
 		ret = fmtxRDSSetRtMessage(settings.rtMessage);
 		if (ret != FMTX_MODE_OK)
 		{
@@ -664,6 +676,8 @@ int main(int argc, char *argv[])
 			settings.rtMessage = strdup(settings.artist);
 		}
 
+		logwrite(LOG_INFO, "Setting RT+ message");
+
 		ret = fmtxRDSSetRtMessage(settings.rtMessage);
 		if (ret != FMTX_MODE_OK)
 		{
@@ -676,6 +690,8 @@ int main(int argc, char *argv[])
 		if ( title_len == 0 )	// Use DUMMY_CLASS code if we don't have
 			title_code = 0;		// a title set
 
+		logwrite(LOG_INFO, "Setting RT+ offsets");
+
 		ret = fmtxRDSSetRtPlusInfo(artist_code, artist_pos, artist_len, title_code, title_pos, title_len);
 		if (ret != FMTX_MODE_OK)
 		{
@@ -686,6 +702,8 @@ int main(int argc, char *argv[])
 
 	if (settings.setPower || settings.setAntennaCap)
 	{
+		logwrite(LOG_INFO, "Setting tune power values");
+
 		ret = fmtxTransmitterSetTunePower(settings.power, settings.antennaCap);
 		if (ret != FMTX_MODE_OK)
 		{
@@ -697,6 +715,8 @@ int main(int argc, char *argv[])
 
 	if (settings.setPreemphasisId)
 	{
+		logwrite(LOG_INFO, "Setting preemphasis ID");
+
 		ret = fmtxTransmitterSetPreemphasisId(settings.preemphasisId);
 		if(ret != FMTX_MODE_OK){
 			logwrite(LOG_ERROR, "Can't set transmitter preemphasis flag");
@@ -707,6 +727,8 @@ int main(int argc, char *argv[])
 
 	if ( settings.setLmr || settings.setPilot || settings.setRds )
 	{
+		logwrite(LOG_INFO, "Setting component flags");
+
 		uint8_t ComponentFlags = 0;
 		if(settings.lmr)
 			ComponentFlags |= TX_COMPONENT_ENABLE_LMR_MASK;
@@ -725,6 +747,8 @@ int main(int argc, char *argv[])
 
 	if (settings.setPilotDeviation)
 	{
+		logwrite(LOG_INFO, "Setting pilot deviation");
+
 		ret = fmtxTransmitterSetPilotDeviation(settings.pilotDeviation);
 		if (ret != FMTX_MODE_OK)
 		{
@@ -735,6 +759,8 @@ int main(int argc, char *argv[])
 
 	if (settings.setPilotFrequency)
 	{
+		logwrite(LOG_INFO, "Setting pilot frequency");
+
 		ret = fmtxTransmitterSetPilotFrequency(settings.pilotFrequency);
 		if (ret != FMTX_MODE_OK)
 		{
@@ -745,6 +771,8 @@ int main(int argc, char *argv[])
 
 	if (settings.setRdsDeviation)
 	{
+		logwrite(LOG_INFO, "Setting RDS deviation");
+
 		ret = fmtxTransmitterSetRDSDeviation(settings.rdsDeviation);
 		if (ret != FMTX_MODE_OK)
 		{
