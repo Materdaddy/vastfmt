@@ -30,6 +30,21 @@ typedef struct settings_s
 	bool		lmr;				// 
 	bool		rds;				// 
 	uint32_t	rdsDeviation;		// 
+
+	bool		setTransmit;
+	bool		setTuneFrequency;
+	bool		setRdsPI;
+	bool		setRdsLineText;
+	bool		setRtMessage;
+	bool		setPower;
+	bool		setAntennaCap;
+	bool		setPreemphasisId;
+	bool		setPilot;
+	bool		setPilotDeviation;
+	bool		setPilotFrequency;
+	bool		setLmr;
+	bool		setRds;
+	bool		setRdsDeviation;
 } settings_t;
 
 settings_t settings = { 0 };
@@ -278,9 +293,9 @@ int main(int argc, char *argv[])
 
 	settings.tuneFrequency = 87.9;					// in MHz
 	sscanf("40A7", "%x%x", &settings.rdsPI, (&settings.rdsPI+1)); // 40A7 in hex
-	settings.rdsLineId = 0;							// Default of first one
-	settings.rdsLineCount = 1;						// We're about to create one...
-	settings.rdsLineText[0] = strdup("VASTINT");	// Default of VASTINT
+//	settings.rdsLineId = 0;							// Default of first one
+//	settings.rdsLineCount = 0;						// We're about to create one...
+//	settings.rdsLineText[0] = strdup("VASTINT");	// Default of VASTINT
 //	settings.rtMessage = strdup("");				// Default empty string
 	settings.power = 88;							// in dBµV
 	settings.antennaCap = 7.5;						// in pF
@@ -330,18 +345,25 @@ int main(int argc, char *argv[])
 		switch (c)
 		{
 			case 't':
+				settings.setTransmit = true;
+
 				settings.transmit = true;
 				logwrite(LOG_INFO, "Enabled transmission");
 				break;
 			case 'n':
+				settings.setTransmit = true;
+
 				settings.transmit = false;
 				logwrite(LOG_INFO, "Diabled transmission");
 				break;
 			case 'f': // tune-frequency
+				settings.setTuneFrequency = true;
+
 				settings.tuneFrequency = strtod(optarg, NULL);
 				logwrite(LOG_INFO, "Set tune frequency to %f", settings.tuneFrequency);
 				break;
 			case 's': // rds-station
+
 				if ( settings.rdsLineCount >= 12 )
 				{
 					logwrite(LOG_ERROR, "You already have 12 RDS line text strings");
@@ -355,6 +377,7 @@ int main(int argc, char *argv[])
 				logwrite(LOG_INFO, "Set Station to %s",
 					settings.rdsLineText[settings.rdsLineCount]);
 
+				settings.setRdsLineText = true;
 				settings.rdsLineCount++;
 
 				//TODO: Calculate PI
@@ -362,24 +385,32 @@ int main(int argc, char *argv[])
 				//logwrite(LOG_INFO, "Set RDS PI to %ld", settings.rdsPI);
 				break;
 			case 'R': // rds-text
+				settings.setRtMessage = true;
+
 				if ( settings.rtMessage )
 					free(settings.rtMessage);
 				settings.rtMessage = strdup(optarg);
 				logwrite(LOG_INFO, "Set RDS RT to %s", settings.rtMessage);
 				break;
 			case 'T': // title
+				settings.setRtMessage = true;
+
 				if ( settings.title )
 					free(settings.title);
 				settings.title = strdup(optarg);
 				logwrite(LOG_INFO, "Set RDS RT+ code 1 (ITEM.TITLE) to %s", settings.title);
 				break;
 			case 'A': // artist
+				settings.setRtMessage = true;
+
 				if ( settings.artist )
 					free(settings.artist);
 				settings.artist = strdup(optarg);
 				logwrite(LOG_INFO, "Set RDS RT+ code 4 (ITEM.ARTIST) to %s", settings.artist);
 				break;
 			case 'p': // power
+				settings.setPower = true;
+
 				settings.power = atoi(optarg);
 				if ( settings.power < 88 )
 				{
@@ -394,10 +425,14 @@ int main(int argc, char *argv[])
 				logwrite(LOG_INFO, "Set transmit power to %lld", settings.power);
 				break;
 			case 'a': // antenna-cap
+				settings.setAntennaCap = true;
+
 				settings.antennaCap = strtod(optarg, NULL);
 				logwrite(LOG_INFO, "Set antenna capacitor to %f", settings.antennaCap);
 				break;
 			case 'e': // preemphasisid
+				settings.setPreemphasisId = true;
+
 				if ( strcmp(optarg, "USA") == 0 )
 				{
 					logwrite(LOG_INFO, "Setting Preemphasis ID to 0 for USA");
@@ -414,38 +449,56 @@ int main(int argc, char *argv[])
 				}
 				break;
 			case 'P': // pilot
+				settings.setPilot = true;
+
 				logwrite(LOG_INFO, "Enabling pilot tone");
 				settings.pilot = true;
 				break;
 			case  1:  // no-pilot
+				settings.setPilot = true;
+
 				logwrite(LOG_INFO, "Disabling pilot tone");
 				settings.pilot = false;
 				break;
 			case 'D': // pilot-deviation
+				settings.setPilotDeviation = true;
+
 				settings.pilotDeviation = atoi(optarg);
 				logwrite(LOG_INFO, "Setting pilot deviation to %d Hz", settings.pilotDeviation);
 				break;
 			case 'F': // pilot-frequency
+				settings.setPilotFrequency = true;
+
 				settings.pilotFrequency = atoi(optarg);
 				logwrite(LOG_INFO, "Setting pilot frequency to %hd Hz", settings.pilotFrequency);
 				break;
 			case 'S': // stereo
+				settings.setLmr = true;
+
 				settings.lmr = true;
 				logwrite(LOG_INFO, "Enabling stereo (Disabling mono)");
 				break;
 			case 'M': // mono
+				settings.setLmr = true;
+
 				settings.lmr = false;
 				logwrite(LOG_INFO, "Enabling mono (Disabling stereo)");
 				break;
 			case  3: // rds
+				settings.setRds = true;
+
 				settings.rds = true;
 				logwrite(LOG_INFO, "Enabling RDS");
 				break;
 			case  2:  // no-rds
+				settings.setRds = true;
+
 				settings.rds = false;
 				logwrite(LOG_INFO, "Disabling RDS");
 				break;
 			case 'd': // rds-deviation
+				settings.setRdsDeviation = true;
+
 				settings.rdsDeviation = atoi(optarg);
 				logwrite(LOG_INFO, "Set RDS deviation to %d", settings.rdsDeviation);
 				break;
@@ -474,7 +527,7 @@ int main(int argc, char *argv[])
 	logwrite(LOG_INFO,"Got CPU ID: %s rev.: %s", cpuid, rev);
 
 
-	if (settings.transmit)
+	if (settings.transmit && settings.setTransmit)
 	{
 		// Turn on the front end
 		ret = fmtxIoAppFeUp();
@@ -495,7 +548,7 @@ int main(int argc, char *argv[])
 				break;
 		}
 	}
-	else
+	else if (settings.setTransmit)
 	{
 		// Turn off the front end
 		ret = fmtxIoAppFeDown();
@@ -508,49 +561,57 @@ int main(int argc, char *argv[])
 	}
 
 
-	ret = fmtxTransmitterSetTuneFreq(settings.tuneFrequency);
-	if (ret != FMTX_MODE_OK)
+	if (settings.setTuneFrequency)
 	{
-		logwrite(LOG_ERROR, "Couldn't set freq to %d", settings.tuneFrequency);
-		exit(EXIT_FAILURE);
+		ret = fmtxTransmitterSetTuneFreq(settings.tuneFrequency);
+		if (ret != FMTX_MODE_OK)
+		{
+			logwrite(LOG_ERROR, "Couldn't set freq to %d", settings.tuneFrequency);
+			exit(EXIT_FAILURE);
+		}
 	}
 
 
-	ret = fmtxRDSSetPI(settings.rdsPI);
-	if (ret != FMTX_MODE_OK)
+	if (settings.setRdsPI)
 	{
-		logwrite(LOG_ERROR, "Can't set RDS PI");
-		exit(EXIT_FAILURE);
+		ret = fmtxRDSSetPI(settings.rdsPI);
+		if (ret != FMTX_MODE_OK)
+		{
+			logwrite(LOG_ERROR, "Can't set RDS PI");
+			exit(EXIT_FAILURE);
+		}
+
+		// iVal TODO
+		//ret = fmtxRDSSetPsMessageCount(iVal);
+		ret = fmtxRDSSetPsMessageCount(settings.rdsLineId);
+		if (ret != FMTX_MODE_OK)
+		{
+			logwrite(LOG_ERROR, "Can't set RDS PS Number");
+			exit(EXIT_FAILURE);
+		}
 	}
 
 
-	// iVal TODO
-	//ret = fmtxRDSSetPsMessageCount(iVal);
-	ret = fmtxRDSSetPsMessageCount(settings.rdsLineId);
-	if (ret != FMTX_MODE_OK)
+	if (settings.setRdsLineText)
 	{
-		logwrite(LOG_ERROR, "Can't set RDS PS Number");
-		exit(EXIT_FAILURE);
+		ret = fmtxRDSSetPsMessageById(settings.rdsLineId,
+				settings.rdsLineText[settings.rdsLineId]);
+		if (ret != FMTX_MODE_OK)
+		{
+			logwrite(LOG_ERROR, "Can't set RDS PS Message");
+			exit(EXIT_FAILURE);
+		}
 	}
 
+	// Compose RT vs RT+ message
 
-	ret = fmtxRDSSetPsMessageById(settings.rdsLineId,
-			settings.rdsLineText[settings.rdsLineId]);
-	if (ret != FMTX_MODE_OK)
-	{
-		logwrite(LOG_ERROR, "Can't set RDS PS Message");
-		exit(EXIT_FAILURE);
-	}
-
-// Compose RT vs RT+ message
-
-	if ( settings.rtMessage && (settings.title || settings.artist) )
+	if ( settings.rtMessage && (settings.title || settings.artist) && settings.setRtMessage )
 	{
 		logwrite(LOG_ERROR, "You set RT and RT+ options.  We'll throw away your RT and make our own based on the RT+ options");
 		free(settings.rtMessage);
 		settings.rtMessage = NULL;
 	}
-	else if ( settings.rtMessage )
+	else if ( settings.rtMessage && settings.setRtMessage )
 	{
 		ret = fmtxRDSSetRtMessage(settings.rtMessage);
 		if (ret != FMTX_MODE_OK)
@@ -560,7 +621,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	if ( settings.title || settings.artist )
+	if ( (settings.title || settings.artist) && settings.setRtMessage )
 	{
 		if (settings.rtMessage)
 		{
@@ -623,55 +684,73 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	ret = fmtxTransmitterSetTunePower(settings.power, settings.antennaCap);
-	if (ret != FMTX_MODE_OK)
+	if (settings.setPower || settings.setAntennaCap)
 	{
-		logwrite(LOG_ERROR, "Can't set transmitter power and capacitor");
-		exit(EXIT_FAILURE);
+		ret = fmtxTransmitterSetTunePower(settings.power, settings.antennaCap);
+		if (ret != FMTX_MODE_OK)
+		{
+			logwrite(LOG_ERROR, "Can't set transmitter power and capacitor");
+			exit(EXIT_FAILURE);
+		}
 	}
 
 
-	ret = fmtxTransmitterSetPreemphasisId(settings.preemphasisId);
-	if(ret != FMTX_MODE_OK){
-		logwrite(LOG_ERROR, "Can't set transmitter preemphasis flag");
-		exit(EXIT_FAILURE);
+	if (settings.setPreemphasisId)
+	{
+		ret = fmtxTransmitterSetPreemphasisId(settings.preemphasisId);
+		if(ret != FMTX_MODE_OK){
+			logwrite(LOG_ERROR, "Can't set transmitter preemphasis flag");
+			exit(EXIT_FAILURE);
+		}
 	}
 
 
-	uint8_t ComponentFlags = 0;
-	if(settings.lmr)
-		ComponentFlags |= TX_COMPONENT_ENABLE_LMR_MASK;
-	if(settings.pilot)
-		ComponentFlags |= TX_COMPONENT_ENABLE_PILOT_MASK;
-	if(settings.rds)
-		ComponentFlags |= TX_COMPONENT_ENABLE_RDS_MASK;
-	ret = fmtxTransmitterSetComponentFlags(ComponentFlags);
-	if (ret != FMTX_MODE_OK)
+	if ( settings.setLmr || settings.setPilot || settings.setRds )
 	{
-		logwrite(LOG_ERROR, "Can't set transmitter components flag");
-		exit(EXIT_FAILURE);
+		uint8_t ComponentFlags = 0;
+		if(settings.lmr)
+			ComponentFlags |= TX_COMPONENT_ENABLE_LMR_MASK;
+		if(settings.pilot)
+			ComponentFlags |= TX_COMPONENT_ENABLE_PILOT_MASK;
+		if(settings.rds)
+			ComponentFlags |= TX_COMPONENT_ENABLE_RDS_MASK;
+		ret = fmtxTransmitterSetComponentFlags(ComponentFlags);
+		if (ret != FMTX_MODE_OK)
+		{
+			logwrite(LOG_ERROR, "Can't set transmitter components flag");
+			exit(EXIT_FAILURE);
+		}
 	}
 
 
-	ret = fmtxTransmitterSetPilotDeviation(settings.pilotDeviation);
-	if (ret != FMTX_MODE_OK)
+	if (settings.setPilotDeviation)
 	{
-		logwrite(LOG_ERROR, "Can't set transmitter pilot deviation flag");
-		exit(EXIT_FAILURE);
+		ret = fmtxTransmitterSetPilotDeviation(settings.pilotDeviation);
+		if (ret != FMTX_MODE_OK)
+		{
+			logwrite(LOG_ERROR, "Can't set transmitter pilot deviation flag");
+			exit(EXIT_FAILURE);
+		}
 	}
 
-	ret = fmtxTransmitterSetPilotFrequency(settings.pilotFrequency);
-	if (ret != FMTX_MODE_OK)
+	if (settings.setPilotFrequency)
 	{
-		logwrite(LOG_ERROR, "Can't set transmitter pilot frequency flag");
-		exit(EXIT_FAILURE);
+		ret = fmtxTransmitterSetPilotFrequency(settings.pilotFrequency);
+		if (ret != FMTX_MODE_OK)
+		{
+			logwrite(LOG_ERROR, "Can't set transmitter pilot frequency flag");
+			exit(EXIT_FAILURE);
+		}
 	}
 
-	ret = fmtxTransmitterSetRDSDeviation(settings.rdsDeviation);
-	if (ret != FMTX_MODE_OK)
+	if (settings.setRdsDeviation)
 	{
-		logwrite(LOG_ERROR, "Can't set transmitter audio deviation flag");
-		exit(EXIT_FAILURE);
+		ret = fmtxTransmitterSetRDSDeviation(settings.rdsDeviation);
+		if (ret != FMTX_MODE_OK)
+		{
+			logwrite(LOG_ERROR, "Can't set transmitter audio deviation flag");
+			exit(EXIT_FAILURE);
+		}
 	}
 
 	return 0;
