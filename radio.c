@@ -9,6 +9,7 @@
 #include <errno.h>
 #include <string.h>
 #include <getopt.h>
+#include <math.h>
 
 typedef struct settings_s
 {
@@ -30,6 +31,7 @@ typedef struct settings_s
 	bool		lmr;				// 
 	bool		rds;				// 
 	uint32_t	rdsDeviation;		// 
+	int			impedance;			// Impedance of the antenna/cable - used for watt->dBµV conversion
 } settings_t;
 
 settings_t settings = { 0 };
@@ -219,6 +221,16 @@ uint16_t call_to_pi(char *call)
 	return picode;
 }
 
+uint8_t watts_to_dbuv(double watts)
+{
+    double dBW = 10 * log10(watts);
+    double dBm = dBW + 30;
+    double p = pow(10, dBm / 10) / 1000;
+    double u = sqrt(p * settings.impedance);
+    double dBuV = 20 * log10(u * 1000000);
+    return dBuV;
+}
+
 void usage(char *appname)
 {
 printf("Usage: %s [OPTION...]\n"
@@ -291,6 +303,7 @@ int main(int argc, char *argv[])
 	settings.lmr = true;							// Left Minus Right (Stereo)
 	settings.rds = true;							// Enabled by default
 	settings.rdsDeviation = 2000;					// in Hz
+	settings.impedance = 50;						// in ohms
 
 	while (1)
 	{
@@ -306,6 +319,8 @@ int main(int argc, char *argv[])
 			{"title",				required_argument,	0, 'T'},
 			{"artist",				required_argument,	0, 'A'},
 			{"power",				required_argument,	0, 'p'},
+			{"power-watts",			required_argument,	0,  4 },
+			{"impedance",			required_argument,  0, 'i'},
 			{"antenna-cap",			required_argument,	0, 'a'},
 			{"preemphasisid",		required_argument,	0, 'e'},
 			{"pilot",				no_argument,		0, 'P'},
@@ -322,7 +337,7 @@ int main(int argc, char *argv[])
 			{0,						0,					0,	0 }
 		};
 
-		c = getopt_long(argc, argv, "tnf:s:R:T:A:p:a:e:PD:F:SMd:vh",
+		c = getopt_long(argc, argv, "tnf:s:R:T:A:p:i:a:e:PD:F:SMd:vh",
 		long_options, &option_index);
 		if (c == -1)
 			break;
@@ -383,15 +398,15 @@ int main(int argc, char *argv[])
 				settings.power = atoi(optarg);
 				if ( settings.power < 88 )
 				{
-					logwrite(LOG_ERROR, "Power set too low, upping to 88");
+					logwrite(LOG_ERROR, "Power set too low, upping to 88dBµV");
 					settings.power = 88;
 				}
 				if ( settings.power > 120 )
 				{
-					logwrite(LOG_ERROR, "Power set too high, lowering to 120");
+					logwrite(LOG_ERROR, "Power set too high, lowering to 120dBµV");
 					settings.power = 120;
 				}
-				logwrite(LOG_INFO, "Set transmit power to %lld", settings.power);
+				logwrite(LOG_INFO, "Set transmit power to %hhddBµV", settings.power);
 				break;
 			case 'a': // antenna-cap
 				settings.antennaCap = strtod(optarg, NULL);
@@ -436,6 +451,24 @@ int main(int argc, char *argv[])
 			case 'M': // mono
 				settings.lmr = false;
 				logwrite(LOG_INFO, "Enabling mono (Disabling stereo)");
+				break;
+			case 'i': // impedance
+				settings.impedance = atoi(optarg);
+				logwrite(LOG_INFO, "Setting impedance of antenna/cable to %uohms", settings.impedance);
+				break;
+			case  4: // power-watts
+				settings.power = watts_to_dbuv(strtod(optarg, NULL));
+				if ( settings.power < 88 )
+				{
+					logwrite(LOG_ERROR, "Power set too low, upping to 88dBµV");
+					settings.power = 88;
+				}
+				if ( settings.power > 120 )
+				{
+					logwrite(LOG_ERROR, "Power set too high, lowering to 120dBµV");
+					settings.power = 120;
+				}
+				logwrite(LOG_INFO, "Set transmit power to %hhddBµV", settings.power);
 				break;
 			case  3: // rds
 				settings.rds = true;

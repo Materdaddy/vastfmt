@@ -14,6 +14,7 @@ OBJECTS_radio = \
 	$(NULL)
 LIBS_radio = \
 	-lusb-1.0 \
+	-lm \
 	$(NULL)
 
 
