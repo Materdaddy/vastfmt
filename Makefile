@@ -1,5 +1,7 @@
 CC := gcc
+CXX := g++
 CFLAGS = -I/usr/include/libusb-1.0
+CXXFLAGS = -std=c++11
 
 TARGETS = radio
 
@@ -10,6 +12,7 @@ OBJECTS_radio = \
 	fmtx.o \
 	hid-libusb.o \
 	logging.o \
+	commands.o \
 	radio.o \
 	$(NULL)
 LIBS_radio = \
@@ -36,11 +39,13 @@ endif
 .PHONY: all
 all: $(TARGETS)
 
-radio: $(OBJECTS_radio)
-	$(CC) $(CFLAGS_$@) $(OBJECTS_$@) $(LIBS_$@) $(LDFLAGS_$@) -o $@
+radio: $(OBJECTS_radio) Makefile
+	$(CXX) $(CFLAGS_$@) $(OBJECTS_$@) $(LIBS_$@) $(LDFLAGS_$@) -o $@
 
-%.o: %.c %.h Makefile
-	$(CC) $(CFLAGS) -c $<
+HEADERS_radio=$(wildcard $(subst .o,.h,$(OBJECTS_radio)))
+
+radio.o: propertydefs.h commanddefs.h logging.h fmtx.h commands.h
+$(OBJECTS_radio): Makefile $(HEADERS_radio)
 
 clean:
 	rm -f $(OBJECTS_radio)
