@@ -1,5 +1,5 @@
-CC := gcc
-CXX := g++
+CC ?= gcc
+CXX ?= g++
 CFLAGS = -I/usr/include/libusb-1.0
 CXXFLAGS = -std=c++11
 
