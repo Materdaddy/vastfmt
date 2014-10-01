@@ -182,6 +182,7 @@ VastTransmission& VastTransmission::get()
 
 VastTransmission& VastTransmission::operator=(bool transmit)
 {
+	mInitialized = true;
 	mTransmit = transmit;
 }
 
