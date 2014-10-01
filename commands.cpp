@@ -902,3 +902,60 @@ bool VastRdsPI::saveParametersToVast()
 
 	return true;
 }
+
+/*
+ *
+ */
+VastReset::VastReset()
+{
+}
+
+VastReset::~VastReset()
+{
+}
+
+VastReset& VastReset::get()
+{
+	static VastReset instance;
+	return instance;
+}
+
+void VastReset::printParameters()
+{
+	if ( mInitialized )
+		cout << "Reset" << endl;
+	else
+		cerr << "Uninitialized!\n";
+}
+
+bool VastReset::saveParametersToVast()
+{
+	if ( !mInitialized )
+	{
+		cerr << "Uninitialized!\n";
+		return false;
+	}
+
+	FMTX_MODE_ENUM ret = FMTX_MODE_OK;
+
+	// Turn on the front end
+	ret = (FMTX_MODE_ENUM) fmtxIoAppFeReset();
+	switch(ret)
+	{
+		case FMTX_MODE_POWER_DOWN:
+		{
+			logwrite(LOG_INFO, "Frontend powered down!");
+			fmtxCmdStatus=FMTX_MODE_OK;
+			break;
+		}
+		default:
+		{
+			logwrite(LOG_ERROR, "Error while resetting");
+			fmtxCmdStatus=FMTX_MODE_NONE;
+			exit(EXIT_FAILURE);
+			break;
+		}
+	}
+
+	return true;
+}

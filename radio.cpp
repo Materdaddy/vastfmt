@@ -275,6 +275,7 @@ printf("Usage: %s [OPTION...]\n"
 "\t    --rds\t\tEnable RDS transmission\n\n"
 "\t    --no-rds\t\tDisable RDS transmission\n\n"
 "\t-d, --rds-deviation\tSet the RDS deviation\n\n"
+"\t    --reset\t\tAttempt to reset the frontend\n\n"
 "\t-v, --verbose\t\tTurn up logging level.  Can be specified more than once for more logging\n\n"
 "\t-h, --help\t\tDisplay this help\n"
 ,
@@ -325,6 +326,7 @@ int main(int argc, char *argv[])
 			{"rds",					no_argument,		0,  3 },
 			{"no-rds",				no_argument,		0,  2 },
 			{"rds-deviation",		required_argument,	0, 'd'},
+			{"reset",				no_argument,		0,  5 },
 			{"verbose",				no_argument,		0, 'v'},
 			{"help",				no_argument,		0, 'h'},
 			{0,						0,					0,	0 }
@@ -556,6 +558,14 @@ int main(int argc, char *argv[])
 				break;
 			}
 
+			case  5: // reset
+			{
+				VastReset& reset = VastReset::get();
+				add_to(commands, reset);
+
+				logwrite(LOG_INFO, "Resetting FE");
+				break;
+			}
 			case  3: // rds
 			{
 				VastPilotLmrRds& rds = VastPilotLmrRds::get();
