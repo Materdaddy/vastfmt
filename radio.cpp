@@ -259,6 +259,7 @@ printf("Usage: %s [OPTION...]\n"
 "\t-A, --artist\t\tSet the artist of the track (RT+ code 4)\n\n"
 "\t-p, --power\t\tSet the transmit power in dBµV\n\n"
 "\t-a, --antenna-cap\tSet the antenna capacitance in pF\n\n"
+"\t    --audio-deviation\tSet the audio deviation in Hz\n\n"
 "\t-i, --impedance\t\tImpedance of your antenna cable in ohms.  Used in calculation\n"
 "\t\t\t\tfor '--power-watts' and must be specified before '--power-watts'\n\n"
 "\t    --power-watts\tSet the power in watts unit instead of dBµV.\n"
@@ -313,9 +314,10 @@ int main(int argc, char *argv[])
 			{"title",				required_argument,	0, 'T'},
 			{"artist",				required_argument,	0, 'A'},
 			{"power",				required_argument,	0, 'p'},
-			{"impedance",			required_argument,  0, 'i'},
+			{"impedance",			required_argument,	0, 'i'},
 			{"power-watts",			required_argument,	0,  4 },
 			{"antenna-cap",			required_argument,	0, 'a'},
+			{"audio-deviation",		required_argument,	0,  6 },
 			{"preemphasisid",		required_argument,	0, 'e'},
 			{"pilot",				no_argument,		0, 'P'},
 			{"no-pilot",			no_argument,		0,  1 },
@@ -329,7 +331,7 @@ int main(int argc, char *argv[])
 			{"reset",				no_argument,		0,  5 },
 			{"verbose",				no_argument,		0, 'v'},
 			{"help",				no_argument,		0, 'h'},
-			{0,						0,					0,	0 }
+			{0,						0,					0,  0 }
 		};
 
 		c = getopt_long(argc, argv, "tnf:s:R:T:A:p:i:a:e:PD:F:SMd:vh",
@@ -447,6 +449,15 @@ int main(int argc, char *argv[])
 				add_to(commands, cap);
 
 				logwrite(LOG_INFO, "Set antenna capacitor to %f", strtod(optarg, NULL));
+				break;
+			}
+			case 6:
+			{
+				VastAudioDeviation& aDev = VastAudioDeviation::get();
+				aDev = atoi(optarg);
+				add_to(commands, aDev);
+
+				logwrite(LOG_INFO, "Set audio deviation to %d", atoi(optarg));
 				break;
 			}
 			case 'e': // preemphasisid
