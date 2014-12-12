@@ -101,7 +101,7 @@ public:
 	~VastAudioDeviation();
 
 	static VastAudioDeviation& get();
-	VastAudioDeviation& operator=(uint8_t audioDeviation);
+	VastAudioDeviation& operator=(uint32_t audioDeviation);
 
 	void printParameters();
 	bool saveParametersToVast();
