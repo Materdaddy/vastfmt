@@ -371,7 +371,7 @@ VastAudioDeviation& VastAudioDeviation::get()
 	return instance;
 }
 
-VastAudioDeviation& VastAudioDeviation::operator=(uint8_t audioDeviation)
+VastAudioDeviation& VastAudioDeviation::operator=(uint32_t audioDeviation)
 {
 	mInitialized = true;
 	mAudioDeviation = audioDeviation;
@@ -380,11 +380,9 @@ VastAudioDeviation& VastAudioDeviation::operator=(uint8_t audioDeviation)
 void VastAudioDeviation::printParameters()
 {
 	if ( mInitialized )
-		cout << "AudioDeviation: " << static_cast<int>(mAudioDeviation)
-			 << ( mAudioDeviation == 1 ? " (US)" : "" )
-			 << ( mAudioDeviation == 2 ? " (Europe)" : "" )
-			 << endl;
+		cout << "AudioDeviation: " << static_cast<int>(mAudioDeviation) << endl;
 	else
+		cerr << "Unitialized!\n";
 		cerr << "Unitialized!\n";
 }
 

@@ -107,7 +107,7 @@ public:
 	bool saveParametersToVast();
 
 private:
-	uint8_t mAudioDeviation;// = 0;
+	uint32_t mAudioDeviation;// = 0;
 };
 
 class VastPilotLmrRds : public VastCommand
