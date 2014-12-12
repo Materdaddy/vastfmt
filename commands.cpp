@@ -383,7 +383,6 @@ void VastAudioDeviation::printParameters()
 		cout << "AudioDeviation: " << static_cast<int>(mAudioDeviation) << endl;
 	else
 		cerr << "Unitialized!\n";
-		cerr << "Unitialized!\n";
 }
 
 bool VastAudioDeviation::saveParametersToVast()
