@@ -94,6 +94,22 @@ private:
 	uint8_t mPreemphasisId;// = 0;
 };
 
+class VastAudioDeviation : public VastCommand
+{
+public:
+	VastAudioDeviation();
+	~VastAudioDeviation();
+
+	static VastAudioDeviation& get();
+	VastAudioDeviation& operator=(uint8_t audioDeviation);
+
+	void printParameters();
+	bool saveParametersToVast();
+
+private:
+	uint8_t mAudioDeviation;// = 0;
+};
+
 class VastPilotLmrRds : public VastCommand
 {
 public:

@@ -356,6 +356,61 @@ bool VastPreemphasisId::saveParametersToVast()
 /*
  *
  */
+VastAudioDeviation::VastAudioDeviation()
+{
+}
+
+VastAudioDeviation::~VastAudioDeviation()
+{
+}
+
+VastAudioDeviation& VastAudioDeviation::get()
+{
+	static VastAudioDeviation instance;
+	return instance;
+}
+
+VastAudioDeviation& VastAudioDeviation::operator=(uint8_t audioDeviation)
+{
+	mInitialized = true;
+	mAudioDeviation = audioDeviation;
+}
+
+void VastAudioDeviation::printParameters()
+{
+	if ( mInitialized )
+		cout << "AudioDeviation: " << static_cast<int>(mAudioDeviation)
+			 << ( mAudioDeviation == 1 ? " (US)" : "" )
+			 << ( mAudioDeviation == 2 ? " (Europe)" : "" )
+			 << endl;
+	else
+		cerr << "Unitialized!\n";
+}
+
+bool VastAudioDeviation::saveParametersToVast()
+{
+	if ( !mInitialized )
+	{
+		cerr << "Uninitialized!\n";
+		return false;
+	}
+
+	FMTX_MODE_ENUM ret = FMTX_MODE_OK;
+
+	ret = (FMTX_MODE_ENUM) fmtxTransmitterSetAudioDeviation(mAudioDeviation);
+	if(ret != FMTX_MODE_OK)
+	{
+		logwrite(LOG_ERROR, "Can't set transmitter preemphasis flag");
+		return false;
+	}
+
+	return true;
+}
+
+
+/*
+ *
+ */
 VastPilotLmrRds::VastPilotLmrRds()
 {
 }
