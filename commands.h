@@ -260,4 +260,17 @@ private:
 	uint16_t mRdsPI;
 };
 
+class VastReset : public VastCommand
+{
+public:
+	VastReset();
+	~VastReset();
+
+	static VastReset& get();
+
+	void printParameters();
+	bool saveParametersToVast();
+};
+
+
 #endif // __VAST_COMMANDS_H__
