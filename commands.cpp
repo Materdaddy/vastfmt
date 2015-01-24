@@ -974,20 +974,11 @@ VastReset& VastReset::get()
 
 void VastReset::printParameters()
 {
-	if ( mInitialized )
-		cout << "Reset" << endl;
-	else
-		cerr << "Uninitialized!\n";
+	cout << "Reset" << endl;
 }
 
 bool VastReset::saveParametersToVast()
 {
-	if ( !mInitialized )
-	{
-		cerr << "Uninitialized!\n";
-		return false;
-	}
-
 	FMTX_MODE_ENUM ret = FMTX_MODE_OK;
 
 	// Turn on the front end
