@@ -27,7 +27,7 @@ ifeq ($(ARCH), armv6l)
 # do something RaspPi-y
 
 else
-ifeq ($(filter-out i686 x86_64 armv5tel, $(ARCH)),)
+ifeq ($(filter-out i686 x86_64 armv5tel armv7l, $(ARCH)),)
 # do something Linux-y
 
 else
